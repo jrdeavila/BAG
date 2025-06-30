@@ -11,6 +11,7 @@ return [
     'min.string' => 'El campo :attribute debe tener al menos :min caracteres.',
     'after' => 'El campo :attribute debe ser una fecha posterior a :date.',
     'before' => 'El campo :attribute debe ser una fecha anterior a :date.',
+    'exists' => 'El campo :attribute no existe.',
 
     'attributes' => [
         'name' => 'Nombre',
@@ -21,5 +22,6 @@ return [
         'date' => 'Fecha',
         'description' => 'Descripción',
         'observations' => 'Observaciones',
+        'user_dni' => 'Documento del empleado',
     ],
 ];

@@ -6,5 +6,6 @@ return [
     'Activities' => 'Actividades',
     'Create' => 'Crear',
     'Edit' => 'Editar',
-
+    'Details' => 'Detalles',
+    'Reports' => 'Reportes',
 ];

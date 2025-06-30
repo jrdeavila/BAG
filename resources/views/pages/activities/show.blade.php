@@ -10,6 +10,15 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
+            @foreach (['warning', 'success', 'info', 'error'] as $type)
+                @if (session()->has($type))
+                    <x-adminlte-alert theme="{{ $type }}" dismissable>
+                        {{ session($type) }}
+                    </x-adminlte-alert>
+                @endif
+            @endforeach
+        </div>
+        <div class="col-md-12">
             @role(['superadmin', 'admin'])
                 <div class="row flex-row-reverse">
                     @can('edit-activity')
@@ -21,16 +30,19 @@
                     @endcan
                     @can('delete-activity')
                         <div class="col-md-1 mb-3">
-                            <x-adminlte-button label="Eliminar" icon="fas fa-trash" data-bs-toggle="modal"
-                                data-bs-target="#modal-delete-activity-{{ $activity->id }}" theme="danger" class="w-100" />
+                            <x-adminlte-button label="Eliminar" icon="fas fa-trash" data-toggle="modal"
+                                data-target="#modal-delete-activity-{{ $activity->id }}" theme="danger" class="w-100" />
                             <x-adminlte-modal id="modal-delete-activity-{{ $activity->id }}" title="Eliminar actividad"
                                 theme="danger">
-                                <x-slot name="body">
-                                    <p>¿Desea eliminar la actividad?</p>
-                                </x-slot>
+                                <p>Esta seguro que desea eliminar la actividad. <strong>Esta operación es irreversible</strong></p>
+                                <p>¿Desea eliminar la actividad?</p>
                                 <x-slot name="footerSlot">
-                                    <x-adminlte-button theme="danger" label="Eliminar" icon="fas fa-trash" data-bs-dismiss="modal"
-                                        onclick="window.location='{{ route('activities.destroy', $activity->id) }}';" />
+                                    <form action="{{ route('activities.destroy', $activity->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <x-adminlte-button theme="danger" label="Eliminar" icon="fas fa-trash"
+                                            data-bs-dismiss="modal" type="submit" />
+                                    </form>
                                 </x-slot>
                             </x-adminlte-modal>
                         </div>

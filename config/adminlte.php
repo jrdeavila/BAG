@@ -317,6 +317,15 @@ return [
             'icon' => 'fas fa-users',
             'icon_color' => 'white',
             'active' => ['activities*'],
+            'can' => 'view-activity',
+        ],
+        [
+            'text' => 'Reportes',
+            'route' => 'reports.index',
+            'icon' => 'fas fa-users',
+            'icon_color' => 'white',
+            'active' => ['reports*'],
+            'can' => 'view-activity-report',
         ]
     ],
 

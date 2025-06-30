@@ -9,6 +9,15 @@
 @section('content')
     <div class="row justify-content-center align-items-center">
         <div class="col-md-8">
+            @foreach (['warning', 'success', 'info', 'error'] as $type)
+                @if (session()->has($type))
+                    <x-adminlte-alert theme="{{ $type }}" dismissable>
+                        {{ session($type) }}
+                    </x-adminlte-alert>
+                @endif
+            @endforeach
+        </div>
+        <div class="col-md-8">
             <x-adminlte-card title="Registrar actividad" theme="info" icon="fas fa-clipboard-list" maximizable>
                 <form class="row" action="{{ route('activities.store') }}" method="POST">
                     @csrf

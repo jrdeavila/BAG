@@ -12,16 +12,19 @@
         @foreach ($segments as $key => $segment)
             @php
                 $url .= '/' . $segment;
-                // Opcional: convertir snake_case o guiones a palabras bonitas
                 $label = ucwords(str_replace(['-', '_'], ' ', $segment));
             @endphp
-            @if ($key !== array_key_last($segments))
-                <li>
-                    <a href="{{ $url }}" class="hover:underline text-blue-600">{{ __('messages.' . $label) }}</a>
-                    <span class="mx-1">/</span>
-                </li>
-            @else
-                <li class="font-semibold text-gray-900">{{ __('messages.' . $label) }}</li>
+
+            @if (!is_numeric($label))
+                @if ($key !== array_key_last($segments))
+                    <li>
+                        <a href="{{ $url }}"
+                            class="hover:underline text-blue-600">{{ __('messages.' . $label) }}</a>
+                        <span class="mx-1">/</span>
+                    </li>
+                @else
+                    <li class="font-semibold text-gray-900">{{ __('messages.' . $label) }}</li>
+                @endif
             @endif
         @endforeach
     </ol>

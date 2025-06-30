@@ -1,1 +1,13 @@
 [20-Jun-2025 16:42:37 UTC] PHP Fatal error:  Trait "Spatie\Permission\Traits\HasRoles" not found in /home/ccvalledupar/public_html/BAG/app/Models/User.php on line 12
+[30-Jun-2025 21:48:39 UTC] PHP Fatal error:  Uncaught ErrorException: Cannot modify header information - headers already sent by (output started at /home/ccvalledupar/public_html/dev/BAG/vendor/symfony/http-foundation/Response.php:387) in /home/ccvalledupar/public_html/dev/BAG/vendor/symfony/http-foundation/Response.php:322
+Stack trace:
+#0 /home/ccvalledupar/public_html/dev/BAG/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'Cannot modify h...', '/home/ccvalledu...', 322)
+#1 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}(2, 'Cannot modify h...', '/home/ccvalledu...', 322)
+#2 /home/ccvalledupar/public_html/dev/BAG/vendor/symfony/http-foundation/Response.php(322): header('HTTP/1.1 500 In...', true, 500)
+#3 /home/ccvalledupar/public_html/dev/BAG/vendor/symfony/http-foundation/Response.php(401): Symfony\Component\HttpFoundation\Response->sendHeaders()
+#4 /home/ccvalledupar/public_html/dev/BAG/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Symfony\Component\HttpFoundation\Response->send()
+#5 /home/ccvalledupar/public_html/dev/BAG/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#6 /home/ccvalledupar/public_html/dev/BAG/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#7 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#8 {main}
+  thrown in /home/ccvalledupar/public_html/dev/BAG/vendor/symfony/http-foundation/Response.php on line 322

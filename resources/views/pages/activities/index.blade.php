@@ -14,26 +14,34 @@
                     <div class="row">
                         @role(['superadmin', 'admin'])
                             <div class="col-md-6">
-                                <x-adminlte-input name="user_dni" label="Documento del empleado" type="number"
-                                    fgroup-class="col-md-12" />
+                                <x-adminlte-input value="{{ old('user_dni', request('user_dni')) }}" name="user_dni"
+                                    label="Documento del empleado" type="number" fgroup-class="col-md-12" />
                             </div>
                         @endrole
                         <div class="col-md-2">
-                            <x-adminlte-input name="date" label="Fecha" type="date" fgroup-class="col-md-12" />
+                            <x-adminlte-input value="{{ old('date', request('date')) }}" name="date" label="Fecha"
+                                type="date" fgroup-class="col-md-12" />
                             <div class="col-md-6"></div>
                         </div>
                         <div class="col-md-2">
-                            <x-adminlte-input name="start_time" label="Hora de inicio" type="time"
-                                fgroup-class="col-md-12" />
+                            <x-adminlte-input value="{{ old('start_time', request('start_time')) }}" name="start_time"
+                                label="Hora de inicio" type="time" fgroup-class="col-md-12" />
                         </div>
                         <div class="col-md-2">
-                            <x-adminlte-input name="end_time" label="Hora de finalización" type="time"
-                                fgroup-class="col-md-12" />
+                            <x-adminlte-input value="{{ old('end_time', request('end_time')) }}" name="end_time"
+                                label="Hora de finalización" type="time" fgroup-class="col-md-12" />
                         </div>
                         <div class="col-md-1">
                             <x-adminlte-button theme="info" class="btn-flat w-100" type="submit" label="Filtrar"
                                 icon="fas fa-filter" />
+
                         </div>
+                        @if (count(request()->all()) > 0)
+                            <div class="col-md-1">
+                                <x-adminlte-button theme="info" class="btn-flat w-100" type="button" label="Limpiar"
+                                    icon="fas fa-eraser" onclick="window.location='{{ route('activities.index') }}';" />
+                            </div>
+                        @endif
                     </div>
                 </form>
             </x-adminlte-card>
@@ -89,8 +97,8 @@
                                         </a>
                                     </td>
                                 @endrole
-                                <td>{{ $activity->start_time }}</td>
-                                <td>{{ $activity->end_time }}</td>
+                                <td>{{ \Carbon\Carbon::parse($activity->start_time)->format('h:i A') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($activity->end_time)->format('h:i A') }}</td>
                                 <td>
                                     <div class="btn-group">
                                         @can('show-activity')
