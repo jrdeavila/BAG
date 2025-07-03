@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('observations')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('timeit.usuarios')
+            $table->foreign('user_id')->references('id')->on(env('DB_TIMEIT_DATABASE') . '.usuarios')
                 ->onDelete('set null')
                 ->onUpdate('cascade');
         });
