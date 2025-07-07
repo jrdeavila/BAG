@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityPriority;
+use App\Enums\ActivityStatus;
 use App\Models\Activity;
 use App\Models\Employee;
 use App\Models\User;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,12 +37,13 @@ class ActivityController extends Controller
             $date = $request->get('date');
             $startTime = $request->get('start_time');
             $endTime = $request->get('end_time');
-            $user = User::whereHas('employee', function ($query) use ($userDNI) {
-                $query->where('noDocumento', $userDNI);
-            })->first();
 
             $user = User::find(Auth::id());
+
             if ($user->hasRole('superadmin') || $user->hasRole('admin')) {
+                $user = User::whereHas('employee', function ($query) use ($userDNI) {
+                    $query->where('noDocumento', $userDNI);
+                })->first();
                 $activities = Activity::query()
                     ->when($user, function ($query, $user) {
                         return $query->where('user_id', $user->id);
@@ -79,14 +81,36 @@ class ActivityController extends Controller
         }
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('pages.activities.create');
+        $employees = User::role('activity-user');
+        $user = $employees->whereHas('employee', function ($query) use ($request) {
+            $query->where('noDocumento', $request->get('user_dni'));
+        })->first();
+        if (request()->has('user_dni') && !$user) {
+            return redirect()->back()->withInput()->withErrors('El empleado no existe o no tiene permiso para realizar actividades');
+        }
+        return view('pages.activities.create', compact('user', 'employees'));
     }
 
-    public function edit(Activity $activity)
+    public function edit(Activity $activity, Request $request)
     {
-        return view('pages.activities.edit', compact('activity'));
+        $employees = User::role('activity-user');
+        $removeUser = $request->get('remove_user');
+        if ($removeUser) {
+            $user = null;
+        } else {
+            $user = $activity->user;
+        }
+        if ($request->has('user_dni')) {
+            $user = $employees->whereHas('employee', function ($query) use ($request, $activity) {
+                $query->where('noDocumento', $request->get('user_dni'));
+            })->first();
+        }
+        if (request()->has('user_dni') && !$user) {
+            return redirect()->back()->withInput()->withErrors('El empleado no existe o no tiene permiso para realizar actividades');
+        }
+        return view('pages.activities.edit', compact('activity', 'user', 'employees'));
     }
 
     public function show(Activity $activity)
@@ -97,6 +121,9 @@ class ActivityController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'user_id' => 'nullable|exists:' . User::class . ',id',
+            'priority' => 'nullable|in:' . implode(',', array_map(fn($priority) => $priority->value, ActivityPriority::cases())),
+            'status' => 'nullable|in:' . implode(',', array_map(fn($status) => $status->value, ActivityStatus::cases())),
             'description' => 'required|string|min:5|max:255',
             'date' => 'required|date',
             'start_time' => 'required|before:end_time',
@@ -108,7 +135,10 @@ class ActivityController extends Controller
             DB::beginTransaction();
             $activity = Activity::create([
                 ...$data,
-                'user_id' => Auth::id()
+                'user_id' =>  $request->get('user_id', Auth::id()),
+                'created_by' => Auth::id(),
+                'status' => $request->get('status', ActivityStatus::CREATED_BY_USER),
+                'priority' => $request->get('priority', ActivityPriority::CREATED_BY_USER),
             ]);
             DB::commit();
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad creada correctamente');
@@ -122,18 +152,28 @@ class ActivityController extends Controller
     public function update(Request $request, Activity $activity)
     {
         $request->validate([
+            'user_id' => 'nullable|exists:' . User::class . ',id',
+            'priority' => 'nullable|in:' . implode(',', array_map(fn($priority) => $priority->value, ActivityPriority::cases())),
+            'status' => 'nullable|in:' . implode(',', array_map(fn($status) => $status->value, ActivityStatus::cases())),
             'description' => 'required|string|max:255',
             'date' => 'required|date',
             'start_time' => 'required|before:end_time',
             'end_time' => 'required|after:start_time',
             'observations' => 'nullable|string|max:1000',
         ]);
-        $data = $request->all();
         try {
             DB::beginTransaction();
-            $activity->update($data);
+            $activity->user_id =  $request->get('user_id', $activity->user_id);
+            $activity->status = $request->get('status', $activity->status);
+            $activity->priority = $request->get('priority', $activity->priority);
+            $activity->description = $request->get('description', $activity->description);
+            $activity->date = $request->get('date', $activity->date);
+            $activity->start_time = $request->get('start_time', $activity->start_time);
+            $activity->end_time = $request->get('end_time', $activity->end_time);
+            $activity->observations = $request->get('observations', $activity->observations);
+            $activity->save();
             DB::commit();
-            return redirect()->back()->with('success', 'Actividad actualizada correctamente');
+            return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad actualizada correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'Error al actualizar la actividad');
@@ -155,7 +195,7 @@ class ActivityController extends Controller
 
     public function showUserDetails(User $user)
     {
-        $serviceUrl = env('AUTHORIZATION_EMPLOYEE_DETAILS') . '?user_id=' . $user->id;
+        $serviceUrl = env('AUTHORIZATION_EMPLOYEE_DETAILS') . '/' . $user->id;
         return redirect()->away($serviceUrl);
     }
 }

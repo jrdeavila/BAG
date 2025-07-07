@@ -7,8 +7,8 @@
 @stop
 
 @section('content')
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
             <x-adminlte-card title="Filtros" theme="info" icon="fas fa-filter">
                 <form action="{{ route('activities.index') }}" method="GET">
                     <div class="row">
@@ -47,7 +47,7 @@
             </x-adminlte-card>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="d-none d-md-block">
                 <x-adminlte-card title="Listado de actividades" theme="light" icon="fas fa-clipboard-list">
                     <x-slot name="toolsSlot">
@@ -60,6 +60,8 @@
                         if (auth()->user()->hasRole('superadmin') || auth()->user()->hasRole('admin')) {
                             $heads = [
                                 'Descripción',
+                                'Estado',
+                                'Prioridad',
                                 ['label' => 'Fecha', 'width' => 10, 'sortable' => true],
                                 'Empleado',
                                 'Hora de inicio',
@@ -69,6 +71,8 @@
                         } else {
                             $heads = [
                                 'Descripción',
+                                'Estado',
+                                'Prioridad',
                                 ['label' => 'Fecha', 'width' => 10, 'sortable' => true],
                                 'Hora de inicio',
                                 'Hora de finalización',
@@ -88,6 +92,12 @@
                                     <span class="text-wrap">
                                         {{ $activity->description }}
                                     </span>
+                                </td>
+                                <td>
+                                    <x-badge status="{{ $activity->status }}" />
+                                </td>
+                                <td>
+                                    <x-badge status="{{ $activity->priority }}" />
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td>
                                 @role(['superadmin', 'admin'])
@@ -121,9 +131,13 @@
                                                         irreversible</strong></p>
                                                 <p>¿Desea eliminar la actividad?</p>
                                                 <x-slot name="footerSlot">
-                                                    <x-adminlte-button theme="danger" label="Eliminar" icon="fas fa-trash"
-                                                        data-bs-dismiss="modal"
-                                                        onclick="window.location='{{ route('activities.destroy', $activity->id) }}';" />
+                                                    <form action="{{ route('activities.destroy', $activity->id) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <x-adminlte-button theme="danger" label="Eliminar" icon="fas fa-trash"
+                                                            data-bs-dismiss="modal" type="submit" />
+                                                    </form>
                                                 </x-slot>
                                             </x-adminlte-modal>
                                         </div>

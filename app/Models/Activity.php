@@ -15,6 +15,9 @@ class Activity extends Model
         'description',
         'user_id',
         'date',
+        'status',
+        'priority',
+        'created_by',
         'start_time',
         'end_time',
         'observations',
@@ -29,5 +32,10 @@ class Activity extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

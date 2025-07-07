@@ -1,7 +1,10 @@
-@props(['activity', 'withUserDetails' => false])
+@props(['activity', 'withUserDetails' => false, 'redirect' => true])
 
-<x-adminlte-card onclick="window.location='{{ route('activities.show', $activity->id) }}';"
-    title="{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}" theme="info" icon="fas fa-clipboard-list">
+<x-adminlte-card title="{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}" theme="light"
+    icon="fas fa-clipboard-list" :onclick="$redirect ? 'window.location=\'' . route('activities.show', $activity->id) . '\';' : ''">
+    <x-slot name="toolsSlot">
+        <x-badge status="{{ $activity->status }}" />
+    </x-slot>
     <dl class="row">
         @if ($withUserDetails)
             <div class="col-md-12">
@@ -17,14 +20,30 @@
                             @else
                                 {{ $activity->user->employee->full_name }}
                             @endcan
-
                         </span>
+
                         <span class="description">
                             {{ $activity->user->employee->job->name }}
                         </span>
                     </div>
                 </div>
             </div>
+        @endif
+        <dt class="col-sm-4">Prioridad:</dt>
+        <dd class="col-sm-8">
+            <x-badge status="{{ $activity->priority }}" />
+        </dd>
+        @if (Auth::id() !== $activity->created_by)
+            <dt class="col-sm-4">Creado por:</dt>
+            <dd class="col-sm-8">
+                @can('show-activity-owner')
+                    <a href="{{ route('show-user-details', $activity->createdBy) }}">
+                        {{ $activity->createdBy->employee->full_name }}
+                    </a>
+                @else
+                    {{ $activity->createdBy->employee->full_name }}
+                @endcan
+            </dd>
         @endif
         <dt class="col-sm-4">Descripción:</dt>
         <dd class="col-sm-8">{{ $activity->description }}</dd>

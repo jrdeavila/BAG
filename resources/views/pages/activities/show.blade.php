@@ -12,14 +12,12 @@
         <div class="col-md-12">
             @foreach (['warning', 'success', 'info', 'error'] as $type)
                 @if (session()->has($type))
-                    <x-adminlte-alert theme="{{ $type }}" dismissable>
-                        {{ session($type) }}
-                    </x-adminlte-alert>
+                    <x-adminlte-alert :title="session($type)" theme="{{ $type }}" dismissable />
                 @endif
             @endforeach
         </div>
-        <div class="col-md-12">
-            @role(['superadmin', 'admin'])
+        @if (Auth::user()->can('edit-activity') || Auth::user()->can('delete-activity'))
+            <div class="col-md-12">
                 <div class="row flex-row-reverse">
                     @can('edit-activity')
                         <div class="col-md-1 mb-3">
@@ -34,7 +32,8 @@
                                 data-target="#modal-delete-activity-{{ $activity->id }}" theme="danger" class="w-100" />
                             <x-adminlte-modal id="modal-delete-activity-{{ $activity->id }}" title="Eliminar actividad"
                                 theme="danger">
-                                <p>Esta seguro que desea eliminar la actividad. <strong>Esta operación es irreversible</strong></p>
+                                <p>Esta seguro que desea eliminar la actividad. <strong>Esta operación es irreversible</strong>
+                                </p>
                                 <p>¿Desea eliminar la actividad?</p>
                                 <x-slot name="footerSlot">
                                     <form action="{{ route('activities.destroy', $activity->id) }}" method="POST">
@@ -49,8 +48,8 @@
                     @endcan
                 </div>
                 <hr>
-            @endrole
-        </div>
+            </div>
+        @endif
         <div class="col-md-6">
             <x-activities.activity-card :activity="$activity" />
         </div>
@@ -65,11 +64,11 @@
             </x-adminlte-card>
         </div>
 
-        @role(['superadmin', 'admin'])
+        @can('show-activity-owner')
             <div class="col-md-6">
                 <x-users.user-details-card :user="$activity->user" />
             </div>
-        @endrole
+        @endcan
 
     </div>
 @stop

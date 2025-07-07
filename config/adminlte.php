@@ -317,7 +317,7 @@ return [
             'icon' => 'fas fa-users',
             'icon_color' => 'white',
             'active' => ['activities*'],
-            'can' => 'view-activity',
+            'can' => 'list-activities',
         ],
         [
             'text' => 'Reportes',
