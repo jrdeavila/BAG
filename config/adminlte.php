@@ -313,6 +313,14 @@ return [
 
         // Sidebar items:
         [
+            'text' => 'Inicio',
+            'route' => 'home',
+            'icon' => 'fas fa-home',
+            'icon_color' => 'white',
+            'active' => ['home'],
+            'can' => 'list-activities',
+        ],
+        [
             'text' => 'Actividades',
             'route' => 'activities.index',
             'icon' => 'fas fa-users',

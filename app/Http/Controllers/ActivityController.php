@@ -7,6 +7,7 @@ use App\Enums\ActivityStatus;
 use App\Models\Activity;
 use App\Models\Employee;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -196,6 +197,31 @@ class ActivityController extends Controller
     public function showUserDetails(User $user)
     {
         $serviceUrl = env('AUTHORIZATION_EMPLOYEE_DETAILS') . '/' . $user->id;
-        return redirect()->away($serviceUrl);
+        return redirect()->away($serviceUrl, [
+            // con la cookie de
+
+        ]);
+    }
+
+    public function finish(Activity $activity)
+    {
+        try {
+            DB::beginTransaction();
+            $endTime = $activity->end_time;
+            $date = $activity->date;
+            $endDate = Carbon::parse($date)->addHours($endTime)->format('Y-m-d H:i:s');
+            $isLate = Carbon::now()->gt($endDate);
+            if ($isLate) {
+                $activity->status = ActivityStatus::FINISHED_LATE;
+            } else {
+                $activity->status = ActivityStatus::FINISHED;
+            }
+            $activity->save();
+            DB::commit();
+            return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad finalizada correctamente');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('activities.show', $activity->id)->with('error', 'Error al finalizar la actividad');
+        }
     }
 }

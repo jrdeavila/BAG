@@ -8,10 +8,18 @@
 
 @section('content')
     @if (count($activities) > 0)
-        <div class="d-none d-md-block row">
+        <div class="d-none d-md-flex row justify-content-center">
             <div class="col-md-8">
                 <x-adminlte-card title="Listado de actividades pendientes" theme="light" icon="fas fa-clipboard-list">
-                    <x-adminlte-datatable id="table-activities" :heads="['Fecha', 'Actividad', 'Hora de inicio', 'Hora de finalización', 'Estado']">
+                    <x-adminlte-datatable id="table-activities" :heads="[
+                        'Fecha',
+                        'Actividad',
+                        'Hora de inicio',
+                        'Hora de finalización',
+                        'Estado',
+                        'Prioridad',
+                        'Acciones',
+                    ]" striped hoverable with-buttons>
                         @foreach ($activities as $activity)
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td>
@@ -20,6 +28,14 @@
                                 <td>{{ \Carbon\Carbon::parse($activity->end_time)->format('h:i A') }}</td>
                                 <td>
                                     <x-badge status="{{ $activity->status }}" />
+                                </td>
+                                <td>
+                                    <x-badge status="{{ $activity->priority }}" />
+                                </td>
+                                <td>
+                                    <x-adminlte-button class="btn-xs" icon="fas fa-eye" theme="primary" data-toggle="tooltip"
+                                        title="Ver actividad"
+                                        onclick="window.location='{{ route('activities.show', $activity->id) }}';" />
                                 </td>
                             </tr>
                         @endforeach
