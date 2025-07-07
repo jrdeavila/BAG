@@ -142,7 +142,16 @@
                                 <x-slot name="header">
                                     <a href="{{ route('show-user-details', $activity->user) }}">{{ $activity->user->employee->full_name }}
                                     </a>
+                                </x-slot>
 
+                                <x-slot name="time">
+                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                    <span class="text-muted">
+                                        {{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}
+                                        {{ ' | ' }}
+                                        {{ \Carbon\Carbon::parse($activity->start_time)->format('h:i A') }} -
+                                        {{ \Carbon\Carbon::parse($activity->end_time)->format('h:i A') }}
+                                    </span>
                                 </x-slot>
 
                                 {{ $activity->description }}
