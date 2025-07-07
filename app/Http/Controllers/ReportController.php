@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\ActivityPriority;
 use App\Enums\ActivityStatus;
+use App\Exports\ActivityExport;
 use App\Models\Activity;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -25,7 +27,7 @@ class ReportController extends Controller
             'priority' => 'nullable|in:' . implode(',', array_map(fn($priority) => $priority->value, ActivityPriority::cases())),
             'end_time' => 'nullable|after:start_time',
             'user_dni' => 'nullable|exists:' . Employee::class . ',noDocumento',
-            'view' => 'nullable|in:list,tree',
+            'view' => 'nullable|in:list,tree,excel',
         ]);
         $userDNI = $request->get('user_dni');
         $user = User::whereHas('employee', function ($query) use ($userDNI) {
@@ -66,6 +68,9 @@ class ReportController extends Controller
             ->latest('date', 'end_time');
         if ($view === 'tree') {
             $activities = $activities->paginate(100);
+        } else if ($view === 'excel') {
+            $activities = $activities->get();
+            return Excel::download(new ActivityExport($activities), 'activities.xlsx');
         } else {
             $activities = $activities
                 ->paginate($limit);

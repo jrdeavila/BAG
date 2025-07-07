@@ -86,10 +86,14 @@
                 <div class="col-md-12 d-flex justify-content-center align-items-center mt-3">
                     <x-adminlte-button :theme="request('view') === 'list' || request('view') === null ? 'primary' : 'secondary'"
                         onclick="window.location='{{ route('reports.index', ['view' => 'list'] + request()->all()) }}';"
-                        icon="fas fa-code-branch" class="btn-flat" type="button" />
-                    <x-adminlte-button :theme="request('view') === 'tree' ? 'primary' : 'secondary'"
+                        tooltip="Vista de lista" icon="fas fa-code-branch" class="btn-flat" type="button" />
+                    <x-adminlte-button :theme="request('view') === 'tree' ? 'primary' : 'secondary'" tooltip="Linea de tiempo"
                         onclick="window.location='{{ route('reports.index', ['view' => 'tree'] + request()->all()) }}';"
                         icon="fas fa-list" class="btn-flat" type="button" />
+                    <x-adminlte-button theme="success" class="btn-flat" type="button" icon="fas fa-file-excel"
+                        tooltip="Exportar a Excel"
+                        onclick="window.location='{{ route('reports.index', ['view' => 'excel'] + request()->all()) }}';" />
+
                 </div>
             </div>
         </div>
@@ -116,7 +120,8 @@
                     @endphp
 
                     @foreach ($groupedActivities as $date => $activities)
-                        <x-timeline-label text="{{ $date }}" tooltip="Actividades del día {{ $date }}" />
+                        <x-timeline-label text="{{ $date }}"
+                            tooltip="Actividades del día {{ $date }}" />
                         @foreach ($activities as $activity)
                             @php
                                 $icon = match (\App\Enums\ActivityStatus::from($activity->status)) {
