@@ -13,31 +13,30 @@
                 <form action="{{ route('activities.index') }}" method="GET">
                     <div class="row">
                         @role(['superadmin', 'admin'])
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <x-adminlte-input value="{{ old('user_dni', request('user_dni')) }}" name="user_dni"
                                     label="Documento del empleado" type="number" fgroup-class="col-md-12" />
                             </div>
                         @endrole
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <x-adminlte-input value="{{ old('date', request('date')) }}" name="date" label="Fecha"
                                 type="date" fgroup-class="col-md-12" />
-                            <div class="col-md-6"></div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <x-adminlte-input value="{{ old('start_time', request('start_time')) }}" name="start_time"
                                 label="Hora de inicio" type="time" fgroup-class="col-md-12" />
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <x-adminlte-input value="{{ old('end_time', request('end_time')) }}" name="end_time"
                                 label="Hora de finalización" type="time" fgroup-class="col-md-12" />
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-2 d-flex align-items-end pb-3">
                             <x-adminlte-button theme="info" class="btn-flat w-100" type="submit" label="Filtrar"
                                 icon="fas fa-filter" />
 
                         </div>
                         @if (count(request()->all()) > 0)
-                            <div class="col-md-1">
+                            <div class="col-md-2 d-flex align-items-end pb-3">
                                 <x-adminlte-button theme="info" class="btn-flat w-100" type="button" label="Limpiar"
                                     icon="fas fa-eraser" onclick="window.location='{{ route('activities.index') }}';" />
                             </div>
@@ -111,7 +110,7 @@
                                 <td>{{ \Carbon\Carbon::parse($activity->end_time)->format('h:i A') }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        @can('show-activity')
+                                        @can('view-activity')
                                             <x-adminlte-button label="Ver" icon="fas fa-eye"
                                                 onclick="window.location='{{ route('activities.show', $activity->id) }}';"
                                                 theme="info" class="w-100 btn-flat" />

@@ -72,7 +72,10 @@
                         type="time" fgroup-class="col-md-6" />
                     <x-adminlte-textarea value="{{ old('observations') }}" name="observations" label="Observaciones"
                         fgroup-class="col-md-6">{{ old('observations') }}</x-adminlte-textarea>
-                    <x-adminlte-button theme="info" class="btn-flat" type="submit" label="Guardar" icon="fas fa-save" />
+                    <div class="col-md-12">
+                        <x-adminlte-button theme="info" class="btn-flat" type="submit" label="Guardar"
+                            icon="fas fa-save" />
+                    </div>
                 </form>
             </x-adminlte-card>
         </div>

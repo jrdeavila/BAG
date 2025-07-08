@@ -18,14 +18,20 @@
         </div>
         <div class="col-md-12">
             <div class="row flex-row-reverse">
-                <div class="col-md-1 mb-3">
-                    <form action="{{ route('activities.finish', $activity->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <x-adminlte-button label="Terminar" icon="fas fa-check" theme="success" class="w-100"
-                            type="submit" />
-                    </form>
-                </div>
+                @if (in_array($activity->status, [
+                        \App\Enums\ActivityStatus::PENDING->value,
+                        \App\Enums\ActivityStatus::LATE->value,
+                        \App\Enums\ActivityStatus::PAUSED->value,
+                    ]))
+                    <div class="col-md-1 mb-3">
+                        <form action="{{ route('activities.finish', $activity->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <x-adminlte-button label="Terminar" icon="fas fa-check" theme="success" class="w-100"
+                                type="submit" />
+                        </form>
+                    </div>
+                @endif
                 @can('edit-activity')
                     <div class="col-md-1 mb-3">
                         <x-adminlte-button label="Editar" icon="fas fa-edit"
