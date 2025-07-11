@@ -149,6 +149,9 @@
                 {{ $activities->links('custom.pagination') }}
             </div>
             <div class="d-md-none row">
+                <div class="col-md-12 justify-content-end mb-3">
+                    {{ $activities->withQueryString()->links('custom.pagination') }}
+                </div>
                 @foreach ($activities as $activity)
                     <div class=" col-lg-3 col-md-6 col-sm-6 col-xs-12">
                         <x-activities.activity-card :activity="$activity" />
@@ -156,5 +159,10 @@
                 @endforeach
             </div>
         </div>
+    </div>
+
+    <div class="d-md-none d-block position-fixed" style="bottom: 20px; right: 20px;">
+        <x-adminlte-button label="Registrar actividad" icon="fas fa-clipboard-list"
+            onclick="window.location='{{ route('activities.create') }}';" theme="info" class="w-100" />
     </div>
 @stop
