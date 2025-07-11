@@ -23,8 +23,8 @@
                         \App\Enums\ActivityStatus::LATE->value,
                         \App\Enums\ActivityStatus::PAUSED->value,
                     ]))
-                    <div class="col-md-1 mb-3">
-                        <form action="{{ route('activities.finish', $activity->id) }}" method="POST">
+                    <div class="col-lg-1 col-md-2 mb-3 d-flex align-items-center">
+                        <form class="w-100" action="{{ route('activities.finish', $activity->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <x-adminlte-button label="Terminar" icon="fas fa-check" theme="success" class="w-100"
@@ -33,14 +33,14 @@
                     </div>
                 @endif
                 @can('edit-activity')
-                    <div class="col-md-1 mb-3">
+                    <div class="col-lg-1 col-md-2 mb-3 d-flex algin-items-center">
                         <x-adminlte-button label="Editar" icon="fas fa-edit"
                             onclick="window.location='{{ route('activities.edit', $activity->id) }}';" theme="info"
                             class="w-100" />
                     </div>
                 @endcan
                 @can('delete-activity')
-                    <div class="col-md-1 mb-3">
+                    <div class="col-lg-1 col-md-2 mb-3 d-flex align-items-center">
                         <x-adminlte-button label="Eliminar" icon="fas fa-trash" data-toggle="modal"
                             data-target="#modal-delete-activity-{{ $activity->id }}" theme="danger" class="w-100" />
                         <x-adminlte-modal id="modal-delete-activity-{{ $activity->id }}" title="Eliminar actividad"

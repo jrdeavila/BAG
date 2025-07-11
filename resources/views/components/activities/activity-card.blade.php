@@ -8,10 +8,10 @@
     <dl class="row">
         @if ($withUserDetails)
             <div class="col-md-12">
-                <div class="d-flex justify-content-center align-items-center">
-                    <img class="img-circle elevation-2 float-left mr-2" width="80px" height="80px"
-                        src="{{ $activity->user->adminlte_image() }}" alt="User avatar: {{ $activity->user->name }}">
-                    <div class="user-block">
+                <div class="d-flex justify-content-start align-items-center">
+                    <img class="img-circle elevation-2 float-left mr-2" src="{{ $activity->user->adminlte_image() }}"
+                        alt="User avatar: {{ $activity->user->name }}" style="width: 80px; height: 80px;">
+                    <div class="d-flex flex-column ml-2">
                         <span class="username">
                             @can('show-activity-owner')
                                 <a href="{{ route('show-user-details', $activity->user) }}">

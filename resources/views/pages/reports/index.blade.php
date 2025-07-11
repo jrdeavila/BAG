@@ -8,25 +8,27 @@
 
 @section('content')
     <div class="row justify-content-center">
-        <div class="col-md-8 mb-3">
-            <div class="d-flex flex-row-reverse">
-                @can('assign-activity')
-                    <x-adminlte-button theme="info" class="btn-flat" type="button" label="Asignar actividad"
-                        icon="fas fa-clipboard-list" onclick="window.location='{{ route('activities.create') }}';" />
-                @endcan
+        @can('assign-activity')
+            <div class="d-none d-lg-flex col-lg-10 justify-content-start align-items-center mb-3">
+                <x-adminlte-button theme="info" class="btn-flat" type="button" label="Asignar actividad"
+                    icon="fas fa-clipboard-list" onclick="window.location='{{ route('activities.create') }}';" />
             </div>
-        </div>
+            <div class="d-lg-none position-fixed d-block" style="bottom: 20px; right: 20px; z-index: 1000;">
+                <x-adminlte-button theme="info" class="btn-flat" type="button" label="Asignar actividad"
+                    icon="fas fa-clipboard-list" onclick="window.location='{{ route('activities.create') }}';" />
+            </div>
+        @endcan
 
-        <div class="col-md-8">
+        <div class="col-lg-10">
             <x-adminlte-card title="Filtros" theme="info" icon="fas fa-filter">
                 <form class="row" action="{{ route('reports.index') }}" method="GET">
                     @csrf
                     <input type="hidden" name="view" value="{{ request('view', 'list') }}">
-                    <div class="col-md-4">
+                    <div class="col-lg-5 col-md-4">
                         <x-adminlte-input value="{{ old('user_dni', request('user_dni')) }}" name="user_dni"
                             label="Documento del empleado" type="number" fgroup-class="col-md-12" />
                     </div>
-                    <x-adminlte-select name="status" label="Estado" fgroup-class="col-md-3">
+                    <x-adminlte-select name="status" label="Estado" fgroup-class="col-lg-3 col-md-4">
                         <option value="">Todos</option>
                         @foreach (\App\Enums\ActivityStatus::cases() as $key => $status)
                             <option value="{{ $status->value }}"
@@ -34,7 +36,7 @@
                                 {{ __('messages.' . $status->name) }}</option>
                         @endforeach
                     </x-adminlte-select>
-                    <x-adminlte-select name="priority" label="Prioridad" fgroup-class="col-md-3">
+                    <x-adminlte-select name="priority" label="Prioridad" fgroup-class="col-lg-4 col-md-4">
                         <option value="">Todos</option>
                         @foreach (\App\Enums\ActivityPriority::cases() as $key => $priority)
                             <option value="{{ $priority->value }}"
@@ -43,27 +45,27 @@
                         @endforeach
                     </x-adminlte-select>
                     <x-adminlte-input value="{{ old('start_date', request('start_date')) }}" name="start_date"
-                        label="Fecha de inicio" type="date" fgroup-class="col-md-2" />
+                        label="Fecha de inicio" type="date" fgroup-class="col-lg-3 col-md-4" />
                     <x-adminlte-input value="{{ old('end_date', request('end_date')) }}" name="end_date"
-                        label="Fecha de finalización" type="date" fgroup-class="col-md-2" />
+                        label="Fecha de finalización" type="date" fgroup-class="col-lg-3 col-md-4" />
                     <x-adminlte-input value="{{ old('start_time') }}" name="start_time" label="Hora de inicio"
-                        type="time" fgroup-class="col-md-2" />
+                        type="time" fgroup-class="col-lg-3 col-md-4" />
                     <x-adminlte-input value="{{ old('end_time') }}" name="end_time" label="Hora de finalización"
-                        type="time" fgroup-class="col-md-2" />
-                    <x-adminlte-select name="limit" label="Mostrar" fgroup-class="col-md-2">
+                        type="time" fgroup-class="col-lg-3 col-md-4" />
+                    <x-adminlte-select name="limit" label="Mostrar" fgroup-class="col-lg-3 col-md-4">
                         <option value="5" @if (request('limit') == 5) selected @endif>5</option>
                         <option value="10" @if (request('limit') == 10) selected @endif>10</option>
                         <option value="25" @if (request('limit') == 25) selected @endif>25</option>
                         <option value="50" @if (request('limit') == 50) selected @endif>50</option>
                         <option value="100" @if (request('limit') == 100) selected @endif>100</option>
                     </x-adminlte-select>
-                    <div class="col-md-2 d-flex align-items-end pb-3">
+                    <div class="col-lg-3 col-md-4 d-flex align-items-end pb-3">
                         <x-adminlte-button theme="info" class="btn-flat w-100" type="submit" label="Filtrar"
                             icon="fas fa-filter" />
                     </div>
 
                     @if (count(request()->all()) > 0)
-                        <div class="col-md-2 d-flex align-items-end pb-3">
+                        <div class="col-lg-3 col-md-4 d-flex align-items-end pb-3">
                             <x-adminlte-button theme="info" class="btn-flat w-100" type="button" label="Limpiar"
                                 icon="fas fa-eraser" onclick="window.location='{{ route('reports.index') }}';" />
                         </div>
@@ -71,10 +73,9 @@
                 </form>
             </x-adminlte-card>
         </div>
-        <div class="col-md-8 mb-3">
+        <div class="col-lg-10 mb-3">
             <div class="row">
                 <div class="col-md-6 d-flex align-items-center">
-
                     <span class="text-muted text-sm">
                         Mostrando {{ $activities->count() }} de {{ $activities->total() }} actividades encontradas
                     </span>
@@ -99,10 +100,10 @@
         </div>
         @if (request('view') === 'list' || request('view') === null)
 
-            <div class="col-md-8">
+            <div class="col-lg-10">
                 <div class="row">
                     @foreach ($activities as $activity)
-                        <div class="col-md-4 col-sm-6">
+                        <div class="col-lg-4 col-md-6">
                             <x-activities.activity-card :activity="$activity" :with-user-details="true" :redirect="true" />
                         </div>
                     @endforeach
@@ -111,7 +112,7 @@
         @endif
         @if (request('view') === 'tree')
 
-            <div class="col-md-8">
+            <div class="col-lg-10">
                 <x-timeline>
                     @php
                         $groupedActivities = $activities->groupBy(function ($activity) {
