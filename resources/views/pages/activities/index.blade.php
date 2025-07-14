@@ -12,21 +12,6 @@
             <x-adminlte-card title="Filtros" theme="info" icon="fas fa-filter">
                 <form action="{{ route('activities.index') }}" method="GET">
                     <div class="row">
-                        @can('assign-activity')
-
-                            <div class="col-md-8">
-                                <x-adminlte-select name="user_id" label="Empleado" fgroup-class="col-md-12"
-                                    onchange="this.form.submit()">
-                                    <option value="">Seleccione un empleado</option>
-                                    @foreach ($employees as $employee)
-                                        <option value="{{ $employee->id }}"
-                                            {{ old('user_id', request('user_id')) == $employee->id ? 'selected' : '' }}>
-                                            {{ $employee->employee->full_name }} ({{ $employee->employee->document_number }})
-                                        </option>
-                                    @endforeach
-                                </x-adminlte-select>
-                            </div>
-                        @endcan
                         <div class="col-md-4">
                             <x-adminlte-input value="{{ old('date', request('date')) }}" name="date" label="Fecha"
                                 type="date" fgroup-class="col-md-12" />
