@@ -12,18 +12,21 @@
             <x-adminlte-card title="Filtros" theme="info" icon="fas fa-filter">
                 <form action="{{ route('activities.index') }}" method="GET">
                     <div class="row">
-                        <div class="col-md-8">
-                            <x-adminlte-select name="user_id" label="Empleado" fgroup-class="col-md-12"
-                                onchange="this.form.submit()">
-                                <option value="">Seleccione un empleado</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}"
-                                        {{ old('user_id', request('user_id')) == $employee->id ? 'selected' : '' }}>
-                                        {{ $employee->employee->full_name }} ({{ $employee->employee->document_number }})
-                                    </option>
-                                @endforeach
-                            </x-adminlte-select>
-                        </div>
+                        @can('assign-activity')
+
+                            <div class="col-md-8">
+                                <x-adminlte-select name="user_id" label="Empleado" fgroup-class="col-md-12"
+                                    onchange="this.form.submit()">
+                                    <option value="">Seleccione un empleado</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}"
+                                            {{ old('user_id', request('user_id')) == $employee->id ? 'selected' : '' }}>
+                                            {{ $employee->employee->full_name }} ({{ $employee->employee->document_number }})
+                                        </option>
+                                    @endforeach
+                                </x-adminlte-select>
+                            </div>
+                        @endcan
                         <div class="col-md-4">
                             <x-adminlte-input value="{{ old('date', request('date')) }}" name="date" label="Fecha"
                                 type="date" fgroup-class="col-md-12" />
@@ -53,7 +56,7 @@
         </div>
 
         <div class="col-md-8">
-            <div class="d-none d-md-block">
+            <div class="d-none d-lg-block">
                 <x-adminlte-card title="Listado de actividades" theme="light" icon="fas fa-clipboard-list">
                     <x-slot name="toolsSlot">
                         @can('create-activity')
@@ -154,7 +157,7 @@
                 </x-adminlte-card>
                 {{ $activities->links('custom.pagination') }}
             </div>
-            <div class="d-md-none row">
+            <div class="d-lg-none row">
                 <div class="col-md-12 justify-content-end mb-3">
                     {{ $activities->withQueryString()->links('custom.pagination') }}
                 </div>
