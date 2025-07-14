@@ -26,35 +26,26 @@
                 </x-adminlte-alert>
             @endif
         </div>
-        @can('assign-activity')
-            <div class="col-md-8">
-                @if (is_null($user))
-                    <x-adminlte-card title="Buscar empleado" theme="info" icon="fas fa-clipboard-list" maximizable>
-                        <form class="row" action="{{ route('activities.create') }}" method="GET">
-                            @csrf
-                            <x-adminlte-input value="{{ old('user_dni', request('user_dni')) }}" name="user_dni"
-                                label="Documento del empleado" type="number" fgroup-class="col-md-12" />
-                            <x-adminlte-button theme="info" class="btn-flat" type="submit" label="Buscar"
-                                icon="fas fa-search" />
-                        </form>
-                    </x-adminlte-card>
-                @else
-                    <div class="d-flex flex-row-reverse mb-3">
-                        <x-adminlte-button theme="danger" class="btn-flat" type="button" label="Cambiar empleado"
-                            icon="fas fa-eraser" onclick="window.location='{{ route('activities.create') }}';" />
-                    </div>
-                    <x-users.user-details-card :user="$user" />
-                @endif
-            </div>
-        @endcan
+
         <div class="col-md-8">
             <x-adminlte-card title="Registrar actividad" theme="info" icon="fas fa-clipboard-list" maximizable>
                 <form class="row" action="{{ route('activities.store') }}" method="POST">
                     @csrf
+                    @can('assign-activity')
+                        <x-adminlte-select name="user_id" label="*Empleado" fgroup-class="col-md-6">
+                            <option value="">Seleccione un empleado</option>
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}" {{ old('user_id') == $employee->id ? 'selected' : '' }}>
+                                    {{ $employee->employee->full_name }} ({{ $employee->employee->noDocumento }})
+                                </option>
+                            @endforeach
+                        </x-adminlte-select>
+                    @endcan
                     <x-adminlte-textarea min="6" max="255" name="description" label="*Descripción"
                         fgroup-class="col-md-6">{{ old('description') }}</x-adminlte-textarea>
                     @can('assign-activity')
-                        <input type="hidden" name="user_id" value="{{ $user?->id }}">
+
+
                         <input type="hidden" name="status" value="{{ \App\Enums\ActivityStatus::PENDING->value }}">
 
                         <x-adminlte-select name="priority" label="*Prioridad" fgroup-class="col-md-6">

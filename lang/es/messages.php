@@ -26,6 +26,10 @@ return [
     'created_by_user' => 'Autoasignado',
     'pending' => 'Pendiente',
     'completed' => 'Completada',
+    'finished' => 'Terminada',
+    'finished_late' => 'Terminada atrasada',
+    'late' => 'Atrasada',
+    'cancelled' => 'Cancelada',
     'activities' => [
         'id_label' => 'ID',
         'description_label' => 'Descripción',

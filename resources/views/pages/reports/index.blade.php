@@ -25,8 +25,15 @@
                     @csrf
                     <input type="hidden" name="view" value="{{ request('view', 'list') }}">
                     <div class="col-lg-5 col-md-4">
-                        <x-adminlte-input value="{{ old('user_dni', request('user_dni')) }}" name="user_dni"
-                            label="Documento del empleado" type="number" fgroup-class="col-md-12" />
+                        <x-adminlte-select name="user_id" label="Empleado" fgroup-class="col-md-12"
+                            onchange="this.form.submit()">
+                            <option value="">Todos</option>
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}"
+                                    {{ old('user_id', request('user_id')) == $employee->id ? 'selected' : '' }}>
+                                    {{ $employee->employee->full_name }}</option>
+                            @endforeach
+                        </x-adminlte-select>
                     </div>
                     <x-adminlte-select name="status" label="Estado" fgroup-class="col-lg-3 col-md-4">
                         <option value="">Todos</option>

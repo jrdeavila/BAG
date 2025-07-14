@@ -8,6 +8,7 @@ use App\Models\Activity;
 use App\Models\Employee;
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,51 +30,45 @@ class ActivityController extends Controller
     {
         try {
             $request->validate([
-                'user_dni' => 'nullable|exists:' . Employee::class . ',noDocumento',
                 'date' => 'nullable|date',
                 'start_time' => 'nullable|before:end_time',
                 'end_time' => 'nullable|after:start_time',
+                'user_id' => 'nullable|exists:' . User::class . ',id',
             ]);
-            $userDNI = $request->get('user_dni');
+
             $date = $request->get('date');
             $startTime = $request->get('start_time');
             $endTime = $request->get('end_time');
+            $user = User::find($request->get('user_id', Auth::id()));
 
-            $user = User::find(Auth::id());
-
-            if ($user->hasRole('superadmin') || $user->hasRole('admin')) {
-                $user = User::whereHas('employee', function ($query) use ($userDNI) {
-                    $query->where('noDocumento', $userDNI);
-                })->first();
-                $activities = Activity::query()
-                    ->when($user, function ($query, $user) {
-                        return $query->where('user_id', $user->id);
-                    })
-                    ->when($date, function ($query, $date) {
-                        return $query->where('date', $date);
-                    })
-                    ->when($startTime, function ($query, $startTime) {
-                        return $query->where('start_time', '>=', $startTime);
-                    })
-                    ->when($endTime, function ($query, $endTime) {
-                        return $query->where('end_time', '<=', $endTime);
-                    })
-                    ->paginate(5);
-            } else {
-                $activities = Activity::query()
-                    ->where('user_id', Auth::id())
-                    ->when($date, function ($query, $date) {
-                        return $query->where('date', $date);
-                    })
-                    ->when($startTime, function ($query, $startTime) {
-                        return $query->where('start_time', $startTime);
-                    })
-                    ->when($endTime, function ($query, $endTime) {
-                        return $query->where('end_time', $endTime);
-                    })
-                    ->paginate(5);
-            }
-            return view('pages.activities.index', compact('activities'));
+            $activities = Activity::query()
+                ->when($user, function ($query, $user) {
+                    return $query->where('user_id', $user->id);
+                })
+                ->when($date, function ($query, $date) {
+                    return $query->where('date', $date);
+                })
+                ->when($startTime, function ($query, $startTime) {
+                    return $query->where('start_time', '>=', $startTime);
+                })
+                ->when($endTime, function ($query, $endTime) {
+                    return $query->where('end_time', '<=', $endTime);
+                })
+                ->paginate(5);
+            $activities = Activity::query()
+                ->where('user_id', Auth::id())
+                ->when($date, function ($query, $date) {
+                    return $query->where('date', $date);
+                })
+                ->when($startTime, function ($query, $startTime) {
+                    return $query->where('start_time', $startTime);
+                })
+                ->when($endTime, function ($query, $endTime) {
+                    return $query->where('end_time', $endTime);
+                })
+                ->paginate(5);
+            $employees = User::role('activity-user')->get();
+            return view('pages.activities.index', compact('activities', 'date', 'startTime', 'endTime', 'user', 'employees'));
         } catch (Exception $e) {
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return redirect()->back()->withInput()->withErrors($e->validator);
@@ -84,14 +79,8 @@ class ActivityController extends Controller
 
     public function create(Request $request)
     {
-        $employees = User::role('activity-user');
-        $user = $employees->whereHas('employee', function ($query) use ($request) {
-            $query->where('noDocumento', $request->get('user_dni'));
-        })->first();
-        if (request()->has('user_dni') && !$user) {
-            return redirect()->back()->withInput()->withErrors('El empleado no existe o no tiene permiso para realizar actividades');
-        }
-        return view('pages.activities.create', compact('user', 'employees'));
+        $employees = User::role('activity-user')->get();
+        return view('pages.activities.create', compact('employees'));
     }
 
     public function edit(Activity $activity, Request $request)
@@ -208,8 +197,9 @@ class ActivityController extends Controller
         try {
             DB::beginTransaction();
             $endTime = $activity->end_time;
+            [$hour, $minute] = explode(':', $endTime);
             $date = $activity->date;
-            $endDate = Carbon::parse($date)->addHours($endTime)->format('Y-m-d H:i:s');
+            $endDate = Carbon::parse($date)->setTime($hour, $minute);
             $isLate = Carbon::now()->gt($endDate);
             if ($isLate) {
                 $activity->status = ActivityStatus::FINISHED_LATE;
@@ -221,7 +211,8 @@ class ActivityController extends Controller
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad finalizada correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('activities.show', $activity->id)->with('error', 'Error al finalizar la actividad');
+            throw $e;
+            return redirect()->route('activities.show', $activity->id)->withError('Error al finalizar la actividad');
         }
     }
 }

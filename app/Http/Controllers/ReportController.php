@@ -26,13 +26,9 @@ class ReportController extends Controller
             'status' => 'nullable|in:' . implode(',', array_map(fn($status) => $status->value, ActivityStatus::cases())),
             'priority' => 'nullable|in:' . implode(',', array_map(fn($priority) => $priority->value, ActivityPriority::cases())),
             'end_time' => 'nullable|after:start_time',
-            'user_dni' => 'nullable|exists:' . Employee::class . ',noDocumento',
             'view' => 'nullable|in:list,tree,excel',
+            'user_id' => 'nullable|exists:' . User::class . ',id',
         ]);
-        $userDNI = $request->get('user_dni');
-        $user = User::whereHas('employee', function ($query) use ($userDNI) {
-            $query->where('noDocumento', $userDNI);
-        })->first();
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         $startTime = $request->get('start_time');
@@ -40,8 +36,10 @@ class ReportController extends Controller
         $limit = $request->get('limit', 5);
         $status = $request->get('status');
         $view = $request->get('view');
+        $userId = $request->get('user_id');
 
         $priority = $request->get('priority');
+
 
         $activities = Activity::query()
             ->when($status, function ($query, $status) {
@@ -50,8 +48,8 @@ class ReportController extends Controller
             ->when($priority, function ($query, $priority) {
                 return $query->where('priority', $priority);
             })
-            ->when($user, function ($query, $user) {
-                return $query->where('user_id', $user->id);
+            ->when($userId, function ($query, $userId) {
+                return $query->where('user_id', $userId);
             })
             ->when($startDate, function ($query, $startDate) {
                 return $query->where('date', '>=', $startDate);
@@ -76,7 +74,8 @@ class ReportController extends Controller
                 ->paginate($limit);
         }
 
+        $employees = User::role('activity-user')->get();
 
-        return view('pages.reports.index', compact('activities'));
+        return view('pages.reports.index', compact('activities', 'employees'));
     }
 }
