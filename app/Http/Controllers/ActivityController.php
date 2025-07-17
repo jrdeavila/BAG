@@ -129,8 +129,8 @@ class ActivityController extends Controller
                 ...$data,
                 'user_id' =>  $request->get('user_id', Auth::id()),
                 'created_by' => Auth::id(),
-                'status' => $request->get('status', ActivityStatus::CREATED_BY_USER),
-                'priority' => $request->get('priority', ActivityPriority::CREATED_BY_USER),
+                'status' => $request->get('status', ActivityStatus::CREATED_BY_USER->value),
+                'priority' => $request->get('priority', ActivityPriority::CREATED_BY_USER->value),
             ]);
             DB::commit();
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad creada correctamente');
