@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
+            $table->string('description', 255);
             $table->integer('user_id')->nullable();
             $table->integer('created_by')->nullable();
             $table->date('date');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('priority', array_map(fn($priority) => $priority->value, ActivityPriority::cases()))->default('low');
             $table->time('start_time');
             $table->time('end_time');
-            $table->text('observations')->nullable();
+            $table->longText('observations')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on(env('DB_TIMEIT_DATABASE') . '.usuarios')

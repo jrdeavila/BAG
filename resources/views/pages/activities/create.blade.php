@@ -9,7 +9,7 @@
 @section('content')
     <div class="row justify-content-center align-items-center">
         <div class="col-md-8">
-            @foreach (['warning', 'success', 'info', 'error'] as $type)
+            @foreach (['warning', 'success', 'info', 'error', 'status'] as $type)
                 @if (session()->has($type))
                     <x-adminlte-alert theme="{{ $type }}" dismissable>
                         {{ session($type) }}
@@ -41,7 +41,7 @@
                             @endforeach
                         </x-adminlte-select>
                     @endcan
-                    <x-adminlte-textarea min="6" max="255" name="description" label="*Descripción"
+                    <x-adminlte-textarea maxlength="255" minlength="5" name="description" label="*Descripción"
                         fgroup-class="col-md-6">{{ old('description') }}</x-adminlte-textarea>
                     @can('assign-activity')
 
@@ -62,6 +62,7 @@
                     <x-adminlte-input value="{{ old('end_time') }}" name="end_time" label="*Hora de finalización"
                         type="time" fgroup-class="col-md-6" />
                     <x-adminlte-textarea value="{{ old('observations') }}" name="observations" label="Observaciones"
+                        maxlength="1000" rows="5"
                         fgroup-class="col-md-6">{{ old('observations') }}</x-adminlte-textarea>
                     <div class="col-md-12">
                         <x-adminlte-button theme="info" class="btn-flat" type="submit" label="Guardar"

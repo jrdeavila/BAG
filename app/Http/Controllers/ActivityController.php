@@ -13,6 +13,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ActivityController extends Controller
 {
@@ -73,7 +75,7 @@ class ActivityController extends Controller
             if ($e instanceof \Illuminate\Validation\ValidationException) {
                 return redirect()->back()->withInput()->withErrors($e->validator);
             }
-            return redirect()->back()->withInput()->with('error', 'Error al buscar la actividad');
+            return redirect()->back()->withInput()->with('warning', 'Error al buscar la actividad');
         }
     }
 
@@ -112,17 +114,17 @@ class ActivityController extends Controller
     {
         $request->validate([
             'user_id' => 'nullable|exists:' . User::class . ',id',
+            'description' => 'required|string',
             'priority' => 'nullable|in:' . implode(',', array_map(fn($priority) => $priority->value, ActivityPriority::cases())),
             'status' => 'nullable|in:' . implode(',', array_map(fn($status) => $status->value, ActivityStatus::cases())),
-            'description' => 'required|string|min:5|max:255',
             'date' => 'required|date',
             'start_time' => 'required|before:end_time',
             'end_time' => 'required|after:start_time',
             'observations' => 'nullable|string|max:1000',
         ]);
-        $data = $request->all();
         try {
             DB::beginTransaction();
+            $data = $request->all();
             $activity = Activity::create([
                 ...$data,
                 'user_id' =>  $request->get('user_id', Auth::id()),
@@ -133,7 +135,9 @@ class ActivityController extends Controller
             DB::commit();
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad creada correctamente');
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Error al crear la actividad');
+            DB::rollBack();
+            Log::error($e);
+            return redirect()->back()->withInput()->with('warning', 'Error al crear la actividad');
         }
 
         return redirect()->route('activities.index');
@@ -166,7 +170,8 @@ class ActivityController extends Controller
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad actualizada correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('error', 'Error al actualizar la actividad');
+            Log::error($e);
+            return redirect()->back()->withInput()->with('warning', 'Error al actualizar la actividad');
         }
     }
 
@@ -179,17 +184,15 @@ class ActivityController extends Controller
             return redirect()->route('activities.index')->with('success', 'Actividad eliminada correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('activities.index')->with('error', 'Error al eliminar la actividad');
+            Log::error($e);
+            return redirect()->route('activities.index')->with('warning', 'Error al eliminar la actividad');
         }
     }
 
     public function showUserDetails(User $user)
     {
         $serviceUrl = env('AUTHORIZATION_EMPLOYEE_DETAILS') . '/' . $user->id;
-        return redirect()->away($serviceUrl, [
-            // con la cookie de
-
-        ]);
+        return redirect()->away($serviceUrl);
     }
 
     public function finish(Activity $activity)
@@ -211,8 +214,8 @@ class ActivityController extends Controller
             return redirect()->route('activities.show', $activity->id)->with('success', 'Actividad finalizada correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
-            return redirect()->route('activities.show', $activity->id)->withError('Error al finalizar la actividad');
+            Log::error($e);
+            return redirect()->route('activities.show', $activity->id)->with('warning', 'Error al finalizar la actividad');
         }
     }
 }
