@@ -50,7 +50,7 @@
                         @endcan
                     </x-slot>
                     @php
-                        if (auth()->user()->hasRole('superadmin') || auth()->user()->hasRole('admin')) {
+                        if (auth()->user()->hasAnyRole(['superadmin', 'admin', 'activity-manager'])) {
                             $heads = [
                                 'Descripción',
                                 'Estado',
@@ -93,7 +93,7 @@
                                     <x-badge status="{{ $activity->priority }}" />
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td>
-                                @role(['superadmin', 'admin'])
+                                @role(['superadmin', 'admin', 'activity-manager'])
                                     <td>
                                         <a href="{{ route('show-user-details', $activity->user) }}">
                                             {{ $activity->user->employee->full_name }}

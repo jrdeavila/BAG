@@ -55,6 +55,13 @@ class User extends Authenticatable
         return $this->belongsTo(Employee::class, 'Empleados_id');
     }
 
+    public function scopeWithActiveEmployee($query)
+    {
+        return $query->whereHas('employee', function ($q) {
+            $q->where('estado', 'Activo');
+        });
+    }
+
     public function getAuthPassword()
     {
         return $this->clave;

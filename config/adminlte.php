@@ -335,7 +335,15 @@ return [
             'icon_color' => 'white',
             'active' => ['reports*'],
             'can' => 'view-activity-report',
-        ]
+        ],
+        [
+            'text' => 'Asignar roles',
+            'route' => 'admin.user-roles.index',
+            'icon' => 'fas fa-user-shield',
+            'icon_color' => 'white',
+            'active' => ['admin/user-roles*'],
+            'can' => 'manage-user-roles',
+        ],
     ],
 
     /*

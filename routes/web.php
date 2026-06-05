@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\FinishActivityController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
@@ -22,4 +23,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('activities', ActivityController::class)->names('activities')->except(['show']);
     Route::get('/show-user-details/{user}', [ActivityController::class, 'showUserDetails'])->name('show-user-details');
     Route::get('/reports', ReportController::class)->name('reports.index');
+
+    Route::middleware('can:manage-user-roles')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+        Route::post('user-roles/{user}/toggle', [UserRoleController::class, 'toggle'])->name('user-roles.toggle');
+    });
 });

@@ -74,7 +74,7 @@ class ReportController extends Controller
                 ->paginate($limit);
         }
 
-        $employees = User::role('activity-user')->get();
+        $employees = User::role('activity-user')->withActiveEmployee()->get();
 
         return view('pages.reports.index', compact('activities', 'employees'));
     }

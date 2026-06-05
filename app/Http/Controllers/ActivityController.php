@@ -69,7 +69,7 @@ class ActivityController extends Controller
                     return $query->where('end_time', $endTime);
                 })
                 ->paginate(5);
-            $employees = User::role('activity-user')->get();
+            $employees = User::role('activity-user')->withActiveEmployee()->get();
             return view('pages.activities.index', compact('activities', 'date', 'startTime', 'endTime', 'user', 'employees'));
         } catch (Exception $e) {
             if ($e instanceof \Illuminate\Validation\ValidationException) {
@@ -81,13 +81,13 @@ class ActivityController extends Controller
 
     public function create(Request $request)
     {
-        $employees = User::role('activity-user')->get();
+        $employees = User::role('activity-user')->withActiveEmployee()->get();
         return view('pages.activities.create', compact('employees'));
     }
 
     public function edit(Activity $activity, Request $request)
     {
-        $employees = User::role('activity-user');
+        $employees = User::role('activity-user')->withActiveEmployee();
         $removeUser = $request->get('remove_user');
         if ($removeUser) {
             $user = null;
