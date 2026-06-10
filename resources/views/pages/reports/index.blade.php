@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="row justify-content-center">
-        @can('assign-activity')
+        @can('assign', App\Models\Activity::class)
             <div class="d-none d-lg-flex col-lg-10 justify-content-start align-items-center mb-3">
                 <x-adminlte-button theme="info" class="btn-flat" type="button" label="Asignar actividad"
                     icon="fas fa-clipboard-list" onclick="window.location='{{ route('activities.create') }}';" />

@@ -318,7 +318,6 @@ return [
             'icon' => 'fas fa-home',
             'icon_color' => 'white',
             'active' => ['home'],
-            'can' => 'list-activities',
         ],
         [
             'text' => 'Actividades',
@@ -326,7 +325,6 @@ return [
             'icon' => 'fas fa-users',
             'icon_color' => 'white',
             'active' => ['activities*'],
-            'can' => 'list-activities',
         ],
         [
             'text' => 'Reportes',
@@ -334,15 +332,15 @@ return [
             'icon' => 'fas fa-users',
             'icon_color' => 'white',
             'active' => ['reports*'],
-            'can' => 'view-activity-report',
+            'can' => 'view-reports',
         ],
         [
-            'text' => 'Asignar roles',
-            'route' => 'admin.user-roles.index',
+            'text' => 'Configuración de acceso',
+            'route' => 'admin.areas.index',
             'icon' => 'fas fa-user-shield',
             'icon_color' => 'white',
-            'active' => ['admin/user-roles*'],
-            'can' => 'manage-user-roles',
+            'active' => ['admin/areas*'],
+            'can' => 'manage-areas',
         ],
     ],
 

@@ -13,7 +13,7 @@
                         alt="User avatar: {{ $activity->user->name }}" style="width: 80px; height: 80px;">
                     <div class="d-flex flex-column ml-2">
                         <span class="username">
-                            @can('show-activity-owner')
+                            @can('viewOwner', $activity)
                                 <a href="{{ route('show-user-details', $activity->user) }}">
                                     {{ $activity->user->employee->full_name }}
                                 </a>
@@ -36,7 +36,7 @@
         @if (Auth::id() !== $activity->created_by)
             <dt class="col-sm-4">Creado por:</dt>
             <dd class="col-sm-8">
-                @can('show-activity-owner')
+                @can('viewOwner', $activity)
                     <a href="{{ route('show-user-details', $activity->createdBy) }}">
                         {{ $activity->createdBy->employee->full_name }}
                     </a>

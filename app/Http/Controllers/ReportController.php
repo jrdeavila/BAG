@@ -9,13 +9,14 @@ use App\Models\Activity;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:view-activity-report');
+        $this->middleware('can:view-reports');
     }
     public function __invoke(Request $request)
     {
@@ -40,8 +41,14 @@ class ReportController extends Controller
 
         $priority = $request->get('priority');
 
+        $actor = Auth::user();
+        // Responsable: reportes acotados a funcionarios de su(s) area(s). Superadmin: todo.
+        $areaUserIds = $actor->isSuperadmin() ? null : $this->areaUserIds($actor->responsibleAreaIds());
 
         $activities = Activity::query()
+            ->when($areaUserIds !== null, function ($query) use ($areaUserIds) {
+                return $query->whereIn('user_id', $areaUserIds ?: [0]);
+            })
             ->when($status, function ($query, $status) {
                 return $query->where('status', $status);
             })
@@ -74,8 +81,25 @@ class ReportController extends Controller
                 ->paginate($limit);
         }
 
-        $employees = User::role('activity-user')->withActiveEmployee()->get();
+        $employeesQuery = User::withActiveEmployee();
+        if (! $actor->isSuperadmin()) {
+            $areaIds = $actor->responsibleAreaIds();
+            $employeesQuery->whereHas('employee.job', fn($q) => $q->whereIn('Areas_id', $areaIds ?: [0]));
+        }
+        $employees = $employeesQuery->get();
 
         return view('pages.reports.index', compact('activities', 'employees'));
+    }
+
+    /** IDs de usuarios (funcionarios activos) pertenecientes a las areas dadas. */
+    private function areaUserIds(array $areaIds): array
+    {
+        if (empty($areaIds)) {
+            return [];
+        }
+        return User::withActiveEmployee()
+            ->whereHas('employee.job', fn($q) => $q->whereIn('Areas_id', $areaIds))
+            ->pluck('id')
+            ->all();
     }
 }

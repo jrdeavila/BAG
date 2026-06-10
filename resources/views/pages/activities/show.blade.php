@@ -32,14 +32,14 @@
                         </form>
                     </div>
                 @endif
-                @can('edit-activity')
+                @can('update', $activity)
                     <div class="col-lg-1 col-md-2 mb-3 d-flex algin-items-center">
                         <x-adminlte-button label="Editar" icon="fas fa-edit"
                             onclick="window.location='{{ route('activities.edit', $activity->id) }}';" theme="info"
                             class="w-100" />
                     </div>
                 @endcan
-                @can('delete-activity')
+                @can('delete', $activity)
                     <div class="col-lg-1 col-md-2 mb-3 d-flex align-items-center">
                         <x-adminlte-button label="Eliminar" icon="fas fa-trash" data-toggle="modal"
                             data-target="#modal-delete-activity-{{ $activity->id }}" theme="danger" class="w-100" />
@@ -76,7 +76,7 @@
             </x-adminlte-card>
         </div>
 
-        @can('show-activity-owner')
+        @can('viewOwner', $activity)
             <div class="col-md-6">
                 <x-users.user-details-card :user="$activity->user" />
             </div>

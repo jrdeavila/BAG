@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Job extends Model
 {
@@ -14,6 +15,11 @@ class Job extends Model
 
     protected $primaryKey = 'id';
     public $timestamps = false;
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(Area::class, 'Areas_id', 'id');
+    }
 
     public $appends = [
         'name',

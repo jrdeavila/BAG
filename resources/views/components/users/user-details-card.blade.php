@@ -8,13 +8,13 @@
                     src="{{ $user->adminlte_image() }}" alt="User avatar: {{ $user->name }}">
                 <div class="user-block">
                     <span class="username">
-                        @can('show-activity-owner')
+                        @if (auth()->user()->isSuperadmin() || auth()->user()->isResponsibleFor($user->areaId()))
                             <a href="{{ route('show-user-details', $user) }}">
                                 {{ $user->employee->full_name }}
                             </a>
                         @else
                             {{ $user->employee->full_name }}
-                        @endcan
+                        @endif
 
                     </span>
                     <span class="description">

@@ -24,7 +24,7 @@
                 </x-adminlte-alert>
             @endif
         </div>
-        @can('assign-activity')
+        @can('assign', App\Models\Activity::class)
             <div class="col-md-8">
                 @if (is_null($user))
                     <x-adminlte-card title="Buscar empleado" theme="info" icon="fas fa-clipboard-list" maximizable>
@@ -59,7 +59,7 @@
                     @method('PUT')
                     <x-adminlte-textarea min="5" max="255" name="description" label="Descripción"
                         fgroup-class="col-md-6">{{ old('description', $activity->description) }}</x-adminlte-textarea>
-                    @can('assign-activity')
+                    @can('assign', App\Models\Activity::class)
                         <input type="hidden" name="user_id"
                             value="{{ request()->get('remove_user') ? $user?->id ?? $activity->user_id : $activity->user_id }}">
                         <x-adminlte-select name="status" label="*Estado" fgroup-class="col-md-6">

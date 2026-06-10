@@ -44,13 +44,13 @@
             <div class="d-none d-lg-block">
                 <x-adminlte-card title="Listado de actividades" theme="light" icon="fas fa-clipboard-list">
                     <x-slot name="toolsSlot">
-                        @can('create-activity')
+                        @can('create', App\Models\Activity::class)
                             <x-adminlte-button label="Registrar actividad" icon="fas fa-clipboard-list"
                                 onclick="window.location='{{ route('activities.create') }}';" theme="info" class="w-100" />
                         @endcan
                     </x-slot>
                     @php
-                        if (auth()->user()->hasAnyRole(['superadmin', 'admin', 'activity-manager'])) {
+                        if (auth()->user()->isSuperadmin() || auth()->user()->isResponsible()) {
                             $heads = [
                                 'Descripción',
                                 'Estado',
@@ -93,28 +93,28 @@
                                     <x-badge status="{{ $activity->priority }}" />
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td>
-                                @role(['superadmin', 'admin', 'activity-manager'])
+                                @if (auth()->user()->isSuperadmin() || auth()->user()->isResponsible())
                                     <td>
                                         <a href="{{ route('show-user-details', $activity->user) }}">
                                             {{ $activity->user->employee->full_name }}
                                         </a>
                                     </td>
-                                @endrole
+                                @endif
                                 <td>{{ \Carbon\Carbon::parse($activity->start_time)->format('h:i A') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($activity->end_time)->format('h:i A') }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        @can('view-activity')
+                                        @can('view', $activity)
                                             <x-adminlte-button label="Ver" icon="fas fa-eye"
                                                 onclick="window.location='{{ route('activities.show', $activity->id) }}';"
                                                 theme="info" class="w-100 btn-flat" />
                                         @endcan
-                                        @can('edit-activity')
+                                        @can('update', $activity)
                                             <x-adminlte-button label="Editar" icon="fas fa-edit"
                                                 onclick="window.location='{{ route('activities.edit', $activity->id) }}';"
                                                 theme="info" class="w-100 btn-flat" />
                                         @endcan
-                                        @can('delete-activity')
+                                        @can('delete', $activity)
                                             <x-adminlte-button label="Eliminar" icon="fas fa-trash" data-toggle="modal"
                                                 data-target="#modal-delete-activity-{{ $activity->id }}" theme="danger"
                                                 class="w-100 btn-flat" />
