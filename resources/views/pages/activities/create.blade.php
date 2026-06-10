@@ -44,6 +44,14 @@
                                 @endif
                             </select>
                         </div>
+                    @else
+                        {{-- Funcionario sin capacidad de asignar: se autoselecciona el mismo y no es editable. --}}
+                        <div class="form-group col-md-6">
+                            <label for="user_display">*Empleado</label>
+                            <input type="text" id="user_display" class="form-control" readonly
+                                value="{{ auth()->user()->employee->full_name }} ({{ auth()->user()->employee->noDocumento }})">
+                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                        </div>
                     @endcan
                     <x-adminlte-textarea maxlength="255" minlength="5" name="description" label="*Descripción"
                         fgroup-class="col-md-6">{{ old('description') }}</x-adminlte-textarea>

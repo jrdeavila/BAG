@@ -9,7 +9,7 @@ use App\Models\User;
  * Autorizacion de actividades por modelo de capacidades:
  *  - superadmin: todo (concedido en Gate::before, no llega aqui).
  *  - responsable de area: gestiona actividades de su(s) area(s).
- *  - funcionario normal: ve / edita observaciones / finaliza SUS actividades.
+ *  - funcionario normal: crea / ve / edita observaciones / finaliza SUS actividades.
  */
 class ActivityPolicy
 {
@@ -43,7 +43,9 @@ class ActivityPolicy
 
     public function create(User $user): bool
     {
-        return $user->isResponsible();
+        // Cualquier funcionario con acceso a la plataforma puede crear actividades
+        // (para si mismo). Asignar a otros sigue restringido por la capacidad 'assign'.
+        return true;
     }
 
     /** Asignar la actividad a otro empleado (incluye fijar estado/prioridad). */
